@@ -1,0 +1,11 @@
+{
+  "appId": "com.focuspro.timer",
+  "appName": "FocusPro",
+  "version": "1.0.0",
+  "description": "Professional Pomodoro Timer - FocusPro App",
+  "author": "FocusPro Team",
+  "webDir": "dist",
+  "ios": {
+    "bundleId": "com.focuspro.timer"
+  }
+}

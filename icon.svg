@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90E2"/>
+      <stop offset="100%" style="stop-color:#1E3A5F"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Circle -->
+  <circle cx="512" cy="512" r="480" fill="url(#bg)"/>
+  
+  <!-- Clock Face -->
+  <circle cx="512" cy="512" r="380" fill="none" stroke="#ffffff" stroke-width="24" opacity="0.3"/>
+  
+  <!-- Clock Hour Marks -->
+  <g stroke="#ffffff" stroke-width="20" stroke-linecap="round">
+    <line x1="512" y1="160" x2="512" y2="200"/>
+    <line x1="512" y1="824" x2="512" y2="864"/>
+    <line x1="160" y1="512" x2="200" y2="512"/>
+    <line x1="824" y1="512" x2="864" y2="512"/>
+    <line x1="750" y1="274" x2="780" y2="300"/>
+    <line x1="750" y1="750" x2="780" y2="724"/>
+    <line x1="274" y1="274" x2="244" y2="300"/>
+    <line x1="274" y1="750" x2="244" y2="724"/>
+  </g>
+  
+  <!-- Hour Hand -->
+  <line x1="512" y1="512" x2="512" y2="300" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+  
+  <!-- Minute Hand -->
+  <line x1="512" y1="512" x2="650" y2="512" stroke="#ffffff" stroke-width="24" stroke-linecap="round"/>
+  
+  <!-- Center Dot -->
+  <circle cx="512" cy="512" r="20" fill="#ffffff"/>
+  
+  <!-- Focus Arc (showing 25 minutes / ~150 degrees) -->
+  <path d="M 512 132 A 380 380 0 0 1 820 400" fill="none" stroke="#64B5F6" stroke-width="16" stroke-linecap="round" opacity="0.8"/>
+</svg>

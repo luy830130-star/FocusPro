@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/assets/manifest-BM8w_2ik.json" />
+    <meta name="theme-color" content="#667eea" />
+    <title>FocusPro - Pomodoro Timer</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+      }
+      .app {
+        text-align: center;
+        padding: 40px;
+        width: 100%;
+        max-width: 400px;
+      }
+      .logo { font-size: 48px; margin-bottom: 10px; }
+      .title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .subtitle { color: #888; margin-bottom: 40px; }
+      .timer-circle {
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #1e2a4a, #0f1729);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 40px;
+        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+        position: relative;
+      }
+      .timer-circle::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        z-index: -1;
+        opacity: 0.5;
+      }
+      .time-display { font-size: 64px; font-weight: 700; letter-spacing: -2px; }
+      .timer-label { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 2px; }
+      .controls { display: flex; gap: 16px; justify-content: center; margin-bottom: 30px; }
+      .btn {
+        padding: 16px 32px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        flex: 1;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      }
+      .btn-secondary { background: #2a3a5a; color: white; }
+      .btn-secondary:hover { background: #3a4a6a; }
+      .modes { display: flex; gap: 8px; justify-content: center; margin-bottom: 30px; }
+      .mode-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        background: #1e2a4a;
+        color: #666;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .mode-btn.active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+      }
+      .stats { background: #1e2a4a; border-radius: 16px; padding: 20px; margin-top: 20px; }
+      .stats-title { font-size: 14px; color: #888; margin-bottom: 16px; }
+      .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .stat-item { text-align: center; }
+      .stat-value { font-size: 24px; font-weight: 700; color: #667eea; }
+      .stat-label { font-size: 11px; color: #666; margin-top: 4px; }
+      .pro-banner {
+        margin-top: 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .pro-content { display: flex; align-items: center; gap: 12px; }
+      .pro-icon { font-size: 28px; }
+      .pro-text { flex: 1; text-align: left; }
+      .pro-title { font-weight: 600; font-size: 14px; }
+      .pro-desc { font-size: 11px; opacity: 0.8; }
+      .pro-btn {
+        background: white;
+        color: #667eea;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      
+      /* Payment Modal */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-overlay.show { display: flex; }
+      .modal {
+        background: #1e2a4a;
+        border-radius: 20px;
+        padding: 30px;
+        width: 90%;
+        max-width: 360px;
+        text-align: center;
+      }
+      .modal-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+      .modal-price { font-size: 48px; font-weight: 700; color: #667eea; margin: 20px 0; }
+      .modal-price span { font-size: 18px; color: #888; }
+      .modal-features { text-align: left; margin: 20px 0; }
+      .modal-feature { padding: 8px 0; color: #ccc; font-size: 14px; }
+      .modal-feature::before { content: '✓ '; color: #4caf50; }
+      .modal-btn {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 12px;
+      }
+      .modal-btn-secondary {
+        background: transparent;
+        border: 1px solid #666;
+        color: #888;
+      }
+      .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="logo">🎯</div>
+      <div class="title">FocusPro</div>
+      <div class="subtitle">Professional Pomodoro Timer</div>
+      
+      <div class="modes">
+        <button class="mode-btn active" onclick="setMode(25, 'Focus')">Focus</button>
+        <button class="mode-btn" onclick="setMode(5, 'Short Break')">Short Break</button>
+        <button class="mode-btn" onclick="setMode(15, 'Long Break')">Long Break</button>
+      </div>
+      
+      <div class="timer-circle">
+        <div class="time-display" id="timeDisplay">25:00</div>
+        <div class="timer-label" id="timerLabel">Focus</div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn btn-primary" id="startBtn" onclick="toggleTimer()">Start</button>
+        <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+      </div>
+      
+      <div class="stats">
+        <div class="stats-title">Today's Progress</div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="sessionsCount">0</div>
+            <div class="stat-label">Sessions</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="focusTime">0</div>
+            <div class="stat-label">Minutes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="streakCount">0</div>
+            <div class="stat-label">Streak</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="pro-banner" id="proBanner">
+        <div class="pro-content">
+          <span class="pro-icon">⭐</span>
+          <div class="pro-text">
+            <div class="pro-title">Upgrade to FocusPro Pro</div>
+            <div class="pro-desc">Advanced statistics, themes, widgets & more</div>
+          </div>
+          <button class="pro-btn" onclick="showPaymentModal()">$2.99</button>
+        </div>
+      </div>
+      
+      <!-- Payment Modal -->
+      <div class="modal-overlay" id="paymentModal">
+        <div class="modal">
+          <div class="modal-title">🎯 FocusPro Pro</div>
+          <div class="modal-price">$2.99 <span>USD</span></div>
+          <div class="modal-features">
+            <div class="modal-feature">Advanced statistics & analytics</div>
+            <div class="modal-feature">Custom themes & colors</div>
+            <div class="modal-feature">Home screen widgets</div>
+            <div class="modal-feature">Apple Watch support</div>
+            <div class="modal-feature">No advertisements</div>
+            <div class="modal-feature">Lifetime access</div>
+          </div>
+          <button class="modal-btn" onclick="processPayment()">💳 Pay $2.99</button>
+          <button class="modal-btn modal-btn-secondary" onclick="closePaymentModal()">Cancel</button>
+          <div style="margin-top: 16px; font-size: 11px; color: #666;">
+            🔒 Secure payment via Paddle
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let timeLeft = 25 * 60;
+      let totalTime = 25 * 60;
+      let timerInterval = null;
+      let isRunning = false;
+      let currentMode = 'Focus';
+      let sessions = 0;
+      let focusMinutes = 0;
+      let streak = 0;
+
+      function updateDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timeDisplay').textContent = 
+          minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+      }
+
+      function toggleTimer() {
+        if (isRunning) {
+          clearInterval(timerInterval);
+          document.getElementById('startBtn').textContent = 'Start';
+        } else {
+          timerInterval = setInterval(() => {
+            if (timeLeft > 0) {
+              timeLeft--;
+              updateDisplay();
+            } else {
+              completeSession();
+            }
+          }, 1000);
+          document.getElementById('startBtn').textContent = 'Pause';
+        }
+        isRunning = !isRunning;
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        timeLeft = totalTime;
+        document.getElementById('startBtn').textContent = 'Start';
+        updateDisplay();
+      }
+
+      function setMode(minutes, mode) {
+        currentMode = mode;
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.textContent === mode) btn.classList.add('active');
+        });
+        totalTime = minutes * 60;
+        timeLeft = totalTime;
+        document.getElementById('timerLabel').textContent = mode;
+        resetTimer();
+      }
+
+      function completeSession() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        
+        if (currentMode === 'Focus') {
+          sessions++;
+          focusMinutes += 25;
+          streak++;
+          document.getElementById('sessionsCount').textContent = sessions;
+          document.getElementById('focusTime').textContent = focusMinutes;
+          document.getElementById('streakCount').textContent = streak;
+        }
+        
+        alert(currentMode === 'Focus' ? '🎉 Focus session complete! Take a break.' : '⏰ Break is over! Time to focus.');
+        resetTimer();
+      }
+
+      updateDisplay();
+      
+      // Payment functions
+      function showPaymentModal() {
+        document.getElementById('paymentModal').classList.add('show');
+      }
+      
+      function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('show');
+      }
+      
+      function processPayment() {
+        // For demo: simulate payment success
+        // In production: integrate with Paddle, RevenueCat, or Stripe
+        alert('💰 Payment Successful!\n\nThank you for purchasing FocusPro Pro!\n\nIn production, this would connect to Paddle/RevenueCat for secure payment processing.');
+        
+        // Save purchase status
+        localStorage.setItem('focuspro_pro', 'true');
+        
+        closePaymentModal();
+        
+        // Hide pro banner since user purchased
+        document.getElementById('proBanner').style.display = 'none';
+      }
+      
+      // Check if already purchased
+      if (localStorage.getItem('focuspro_pro') === 'true') {
+        document.getElementById('proBanner').style.display = 'none';
+      }
+    </script>
+  </body>
+</html>
